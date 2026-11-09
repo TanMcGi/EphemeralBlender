@@ -2115,6 +2115,8 @@ int icon_from_idcode(const int idcode)
       return ICON_PARTICLE_DATA;
     case ID_PAL:
       return ICON_COLOR; /* TODO: this would need its own icon! */
+    case ID_PS:
+      return ICON_ARMATURE_DATA;
     case ID_PC:
       return ICON_CURVE_BEZCURVE; /* TODO: this would need its own icon! */
     case ID_LP:

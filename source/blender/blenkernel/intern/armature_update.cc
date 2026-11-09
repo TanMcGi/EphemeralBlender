@@ -20,6 +20,7 @@
 #include "DNA_constraint_types.h"
 #include "DNA_curve_types.h"
 #include "DNA_object_types.h"
+#include "DNA_pose_sequence_types.h"
 
 #include "BKE_action.hh"
 #include "BKE_anim_path.h"
@@ -31,6 +32,9 @@
 #include "BIK_api.h"
 
 #include "DEG_depsgraph.hh"
+#include "DEG_depsgraph_query.hh"
+
+#include "EPH_pose_sequence.hh"
 
 namespace blender {
 
@@ -845,6 +849,12 @@ void BKE_pose_eval_init(Depsgraph *depsgraph, Scene * /*scene*/, Object *object)
     if (bone == nullptr || bone->segments <= 1) {
       BKE_pose_channel_free_bbone_cache(&pchan->runtime);
     }
+  }
+
+  /* Stored poses replace the animated transforms of the bones they cover. */
+  if (object->pose_sequence != nullptr) {
+    ephemeral::pose_sequence_apply(
+        *object->pose_sequence, int(std::floor(DEG_get_ctime(depsgraph))), *pose);
   }
 
   BLI_assert(pose->chan_array != nullptr || pose->chanbase.is_empty());

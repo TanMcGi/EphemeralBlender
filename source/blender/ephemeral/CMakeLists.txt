@@ -14,12 +14,15 @@ set(INC_SYS
 
 set(SRC
   intern/pose.cc
+  intern/pose_sequence.cc
 
   EPH_pose.hh
+  EPH_pose_sequence.hh
 )
 
 set(LIB
   PUBLIC bf::blenlib
+  PUBLIC bf::dna
   PRIVATE bf::intern::guardedalloc
 )
 
@@ -30,6 +33,7 @@ if(WITH_GTESTS)
   set(TEST_INC
   )
   set(TEST_SRC
+    intern/pose_sequence_test.cc
     intern/pose_test.cc
   )
   set(TEST_LIB

@@ -896,6 +896,8 @@ static StringRef template_id_browse_tip(const StructRNA *type)
         return N_("Browse Mask to be linked");
       case ID_PAL:
         return N_("Browse Palette Data to be linked");
+      case ID_PS:
+        return N_("Browse Pose Sequence to be linked");
       case ID_PC:
         return N_("Browse Paint Curve Data to be linked");
       case ID_CF:

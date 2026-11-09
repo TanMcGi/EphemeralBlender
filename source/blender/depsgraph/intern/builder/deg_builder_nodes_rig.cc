@@ -15,6 +15,7 @@
 #include "DNA_armature_types.h"
 #include "DNA_constraint_types.h"
 #include "DNA_object_types.h"
+#include "DNA_pose_sequence_types.h"
 #include "DNA_scene_types.h"
 
 #include "BLI_listbase.h"
@@ -136,6 +137,9 @@ void DepsgraphNodeBuilder::build_rig(Object *object)
    *       multiple times in same scene. */
   /* Armature. */
   build_armature(armature);
+  if (object->pose_sequence != nullptr) {
+    build_generic_id(&object->pose_sequence->id);
+  }
   /* Rebuild pose if not up to date. */
   if (object->pose == nullptr || (object->pose->flag & POSE_RECALC)) {
     /* By definition, no need to tag depsgraph as dirty from here, so we can pass nullptr bmain. */

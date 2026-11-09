@@ -669,6 +669,9 @@ struct Object {
   /** Irradiance caches baked for this object (light-probes only). */
   struct LightProbeObjectCache *lightprobe_cache = nullptr;
 
+  /** Ephemeral Blender: poses applied to this armature object. */
+  struct PoseSequence *pose_sequence = nullptr;
+
   bke::ObjectRuntime *runtime = nullptr;
 
 #ifdef __cplusplus

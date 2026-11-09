@@ -134,6 +134,7 @@ void BKE_main_clear(Main &bmain)
       switch ((eID_Index)a) {
         CASE_ID_INDEX(INDEX_ID_LI);
         CASE_ID_INDEX(INDEX_ID_AC);
+        CASE_ID_INDEX(INDEX_ID_PS);
         CASE_ID_INDEX(INDEX_ID_GD_LEGACY);
         CASE_ID_INDEX(INDEX_ID_NT);
         CASE_ID_INDEX(INDEX_ID_VF);
@@ -1049,6 +1050,8 @@ ListBaseT<ID> *which_libbase(Main *bmain, short type)
       return &(bmain->armatures.cast<ID>());
     case ID_AC:
       return &(bmain->actions.cast<ID>());
+    case ID_PS:
+      return &(bmain->pose_sequences.cast<ID>());
     case ID_NT:
       return &(bmain->nodetrees.cast<ID>());
     case ID_BR:
@@ -1093,6 +1096,7 @@ MainListsArray BKE_main_lists_get(Main &bmain)
 
   /* Moved here to avoid problems when freeing with animato (aligorith). */
   lb[INDEX_ID_AC] = &(bmain.actions.cast<ID>());
+  lb[INDEX_ID_PS] = &(bmain.pose_sequences.cast<ID>());
 
   lb[INDEX_ID_KE] = &(bmain.shapekeys.cast<ID>());
 

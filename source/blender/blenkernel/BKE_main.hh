@@ -67,6 +67,7 @@ struct bSound;
 struct Collection;
 struct bArmature;
 struct bAction;
+struct PoseSequence;
 struct bNodeTree;
 struct Brush;
 struct ParticleSettings;
@@ -387,6 +388,7 @@ struct Main : NonCopyable, NonMovable {
   ListBaseT<Collection> collections = {};
   ListBaseT<bArmature> armatures = {};
   ListBaseT<bAction> actions = {};
+  ListBaseT<PoseSequence> pose_sequences = {};
   ListBaseT<bNodeTree> nodetrees = {};
   ListBaseT<Brush> brushes = {};
   ListBaseT<ParticleSettings> particles = {};

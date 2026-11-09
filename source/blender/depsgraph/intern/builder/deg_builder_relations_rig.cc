@@ -22,6 +22,7 @@
 #include "DNA_constraint_types.h"
 #include "DNA_customdata_types.h"
 #include "DNA_object_types.h"
+#include "DNA_pose_sequence_types.h"
 
 #include "BKE_action.hh"
 #include "BKE_armature.hh"
@@ -304,6 +305,14 @@ void DepsgraphRelationBuilder::build_rig(Object *object)
   build_armature(armature);
   OperationKey armature_key(&armature->id, NodeType::ARMATURE, OperationCode::ARMATURE_EVAL);
   add_relation(armature_key, pose_init_key, "Data dependency");
+  /* Stored poses are applied in pose init, and change with the frame. */
+  if (object->pose_sequence != nullptr) {
+    build_generic_id(&object->pose_sequence->id);
+    add_relation(ComponentKey(&object->pose_sequence->id, NodeType::PARAMETERS),
+                 pose_init_key,
+                 "Pose Sequence -> Pose Init");
+    add_relation(TimeSourceKey(), pose_init_key, "Time Source -> Pose Sequence");
+  }
   /* Run cleanup even when there are no bones. */
   add_relation(pose_init_ik_key, pose_cleanup_key, "Init -> Cleanup");
   /* Relation to the instance, so that instancer can use pose of this object. */

@@ -51,6 +51,7 @@
 #  include "BKE_paint.hh"
 #  include "BKE_particle.h"
 #  include "BKE_pointcloud.hh"
+#  include "BKE_pose_sequence.hh"
 #  include "BKE_scene.hh"
 #  include "BKE_sound.hh"
 #  include "BKE_speaker.hh"
@@ -82,6 +83,7 @@
 #  include "DNA_node_types.h"
 #  include "DNA_particle_types.h"
 #  include "DNA_pointcloud_types.h"
+#  include "DNA_pose_sequence_types.h"
 #  include "DNA_sound_types.h"
 #  include "DNA_speaker_types.h"
 #  include "DNA_text_types.h"
@@ -701,6 +703,19 @@ static Palette *rna_Main_palettes_new(Main *bmain, const char *name)
   return static_cast<Palette *>(palette);
 }
 
+static PoseSequence *rna_Main_pose_sequences_new(Main *bmain, const char *name)
+{
+  char safe_name[MAX_ID_NAME - 2];
+  rna_idname_validate(name, safe_name);
+
+  PoseSequence *seq = BKE_pose_sequence_add(bmain, safe_name);
+  id_us_min(&seq->id);
+
+  WM_main_add_notifier(NC_ID | NA_ADDED, nullptr);
+
+  return seq;
+}
+
 static MovieClip *rna_Main_movieclip_load(Main *bmain,
                                           ReportList *reports,
                                           const char *filepath,
@@ -876,6 +891,7 @@ RNA_MAIN_ID_TAG_FUNCS_DEF(armatures, armatures, ID_AR)
 RNA_MAIN_ID_TAG_FUNCS_DEF(actions, actions, ID_AC)
 RNA_MAIN_ID_TAG_FUNCS_DEF(particles, particles, ID_PA)
 RNA_MAIN_ID_TAG_FUNCS_DEF(palettes, palettes, ID_PAL)
+RNA_MAIN_ID_TAG_FUNCS_DEF(pose_sequences, pose_sequences, ID_PS)
 RNA_MAIN_ID_TAG_FUNCS_DEF(gpencils, gpencils, ID_GD_LEGACY)
 RNA_MAIN_ID_TAG_FUNCS_DEF(grease_pencils, grease_pencils, ID_GP)
 RNA_MAIN_ID_TAG_FUNCS_DEF(movieclips, movieclips, ID_MC)
@@ -2042,6 +2058,46 @@ void RNA_def_main_palettes(BlenderRNA *brna, PropertyRNA *cprop)
       func, "do_ui_user", true, "", "Make sure interface does not reference this palette");
 
   func = RNA_def_function(srna, "tag", "rna_Main_palettes_tag");
+  parm = RNA_def_boolean(func, "value", false, "Value", "");
+  RNA_def_parameter_flags(parm, PropertyFlag(0), PARM_REQUIRED);
+}
+void RNA_def_main_pose_sequences(BlenderRNA *brna, PropertyRNA *cprop)
+{
+  StructRNA *srna;
+  FunctionRNA *func;
+  PropertyRNA *parm;
+
+  RNA_def_property_srna(cprop, "BlendDataPoseSequences");
+  srna = RNA_def_struct(brna, "BlendDataPoseSequences", nullptr);
+  RNA_def_struct_sdna(srna, "Main");
+  RNA_def_struct_ui_text(srna, "Main Pose Sequences", "Collection of pose sequences");
+
+  func = RNA_def_function(srna, "new", "rna_Main_pose_sequences_new");
+  RNA_def_function_ui_description(func, "Add a new pose sequence to the main database");
+  parm = RNA_def_string(func, "name", "PoseSequence", 0, "", "New name for the data-block");
+  RNA_def_parameter_flags(parm, PropertyFlag(0), PARM_REQUIRED);
+  /* return type */
+  parm = RNA_def_pointer(
+      func, "pose_sequence", "PoseSequence", "", "New pose sequence data-block");
+  RNA_def_function_return(func, parm);
+
+  func = RNA_def_function(srna, "remove", "rna_Main_ID_remove");
+  RNA_def_function_flag(func, FUNC_USE_REPORTS);
+  RNA_def_function_ui_description(func, "Remove a pose sequence from the current blendfile");
+  parm = RNA_def_pointer(func, "pose_sequence", "PoseSequence", "", "Pose sequence to remove");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED | PARM_RNAPTR);
+  RNA_def_parameter_clear_flags(parm, PROP_THICK_WRAP, ParameterFlag(0));
+  RNA_def_boolean(
+      func, "do_unlink", true, "", "Unlink all usages of this pose sequence before deleting it");
+  RNA_def_boolean(func,
+                  "do_id_user",
+                  true,
+                  "",
+                  "Decrement user counter of all data-blocks used by this pose sequence");
+  RNA_def_boolean(
+      func, "do_ui_user", true, "", "Make sure interface does not reference this pose sequence");
+
+  func = RNA_def_function(srna, "tag", "rna_Main_pose_sequences_tag");
   parm = RNA_def_boolean(func, "value", false, "Value", "");
   RNA_def_parameter_flags(parm, PropertyFlag(0), PARM_REQUIRED);
 }

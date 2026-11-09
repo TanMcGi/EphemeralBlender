@@ -2609,6 +2609,8 @@ static BIFIconID tree_element_get_icon_from_id(const ID *id)
       return ICON_PARTICLES;
     case ID_PAL:
       return ICON_COLOR;
+    case ID_PS:
+      return ICON_ARMATURE_DATA;
     case ID_VF:
       return ICON_FILE_FONT;
     default:

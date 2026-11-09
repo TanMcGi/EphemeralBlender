@@ -3585,6 +3585,14 @@ static void rna_def_object(BlenderRNA *brna)
   RNA_def_property_ui_text(prop, "Instance Collection", "Instance an existing collection");
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_Object_dependency_update");
 
+  prop = RNA_def_property(srna, "pose_sequence", PROP_POINTER, PROP_NONE);
+  RNA_def_property_struct_type(prop, "PoseSequence");
+  RNA_def_property_pointer_sdna(prop, nullptr, "pose_sequence");
+  RNA_def_property_flag(prop, PROP_EDITABLE | PROP_ID_REFCOUNT);
+  RNA_def_property_ui_text(
+      prop, "Pose Sequence", "Stored poses applied to this armature, overriding its Action");
+  RNA_def_property_update(prop, NC_OBJECT | ND_POSE, "rna_Object_dependency_update");
+
   prop = RNA_def_property(srna, "is_instancer", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, nullptr, "transflag", OB_DUPLI);
   RNA_def_property_clear_flag(prop, PROP_EDITABLE);

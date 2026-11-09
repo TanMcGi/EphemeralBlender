@@ -175,6 +175,7 @@ RNA_MAIN_LISTBASE_FUNCS_DEF(paintcurves)
 RNA_MAIN_LISTBASE_FUNCS_DEF(palettes)
 RNA_MAIN_LISTBASE_FUNCS_DEF(particles)
 RNA_MAIN_LISTBASE_FUNCS_DEF(pointclouds)
+RNA_MAIN_LISTBASE_FUNCS_DEF(pose_sequences)
 RNA_MAIN_LISTBASE_FUNCS_DEF(scenes)
 RNA_MAIN_LISTBASE_FUNCS_DEF(screens)
 RNA_MAIN_LISTBASE_FUNCS_DEF(shapekeys)
@@ -463,6 +464,12 @@ void RNA_def_main(BlenderRNA *brna)
        "Actions",
        "Action data-blocks",
        RNA_def_main_actions},
+      {"pose_sequences",
+       "PoseSequence",
+       "rna_Main_pose_sequences_begin",
+       "Pose Sequences",
+       "Pose Sequence data-blocks",
+       RNA_def_main_pose_sequences},
       {"particles",
        "ParticleSettings",
        "rna_Main_particles_begin",

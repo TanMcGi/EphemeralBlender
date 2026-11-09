@@ -169,6 +169,7 @@ enum ID_Type {
   ID_PT = MAKE_ID2('P', 'T'),        /* PointCloud */
   ID_VO = MAKE_ID2('V', 'O'),        /* Volume */
   ID_GP = MAKE_ID2('G', 'P'),        /* Grease Pencil */
+  ID_PS = MAKE_ID2('P', 'S'),        /* PoseSequence (Ephemeral Blender) */
 };
 
 /* Only used as 'placeholder' in .blend files for directly linked data-blocks. */

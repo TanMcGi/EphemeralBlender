@@ -740,6 +740,11 @@ add_blender_test(
   --python ${CMAKE_CURRENT_LIST_DIR}/bl_animation_pose_slide.py
 )
 
+add_blender_test(
+  ephemeral_pose_sequence
+  --python ${CMAKE_CURRENT_LIST_DIR}/ephemeral_pose_sequence.py
+)
+
 if(TEST_SRC_DIR_EXISTS)
   add_blender_test(
     bl_animation_drivers

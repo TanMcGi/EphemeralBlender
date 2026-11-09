@@ -259,6 +259,7 @@ set(SRC
   intern/pointcloud.cc
   intern/pointcloud_attributes.cc
   intern/pose_backup.cc
+  intern/pose_sequence.cc
   intern/preferences.cc
   intern/preview_image.cc
   intern/report.cc
@@ -498,6 +499,7 @@ set(SRC
   BKE_pointcloud.hh
   BKE_pose.hh
   BKE_pose_backup.h
+  BKE_pose_sequence.hh
   BKE_preferences.h
   BKE_preview_image.hh
   BKE_report.hh
@@ -577,6 +579,7 @@ set(LIB
   PRIVATE bf::depsgraph
   PRIVATE bf::dna
   PRIVATE bf::draw
+  PRIVATE bf::ephemeral
   PRIVATE bf::extern::curve_fit_nd
   PRIVATE bf::functions
   PRIVATE bf::gpu

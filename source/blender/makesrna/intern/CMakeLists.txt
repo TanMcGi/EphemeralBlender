@@ -74,6 +74,7 @@ set(DEFSRC
   rna_particle.cc
   rna_pointcloud.cc
   rna_pose.cc
+  rna_pose_sequence.cc
   rna_render.cc
   rna_rigidbody.cc
   rna_rna.cc
@@ -448,6 +449,7 @@ set(LIB
   PRIVATE bf::animrig
   PRIVATE bf::blenlib
   PRIVATE bf::dna
+  PRIVATE bf::ephemeral
   bf_editor_space_api
 
   bf_editor_animation
