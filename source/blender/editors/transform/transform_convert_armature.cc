@@ -47,6 +47,7 @@
 
 /* Own include. */
 #include "transform_convert.hh"
+#include "transform_convert_pose_sequence.hh"
 
 namespace blender::ed::transform {
 
@@ -641,7 +642,8 @@ static void createTransPose(bContext * /*C*/, TransInfo *t)
           continue;
         }
 
-        if (has_targetless_ik(&pchan) == nullptr) {
+        /* With a Pose Sequence, grabbing any bone moves it (aiming its parent). */
+        if (has_targetless_ik(&pchan) == nullptr && ob->pose_sequence == nullptr) {
           if (pchan.parent && (bone->flag & BONE_CONNECTED)) {
             if (pchan.runtime.flag & POSE_RUNTIME_HINGE_CHILD_TRANSFORM) {
               has_translate_rotate[0] = true;
@@ -717,6 +719,8 @@ static void createTransPose(bContext * /*C*/, TransInfo *t)
     /* We also allow non-active objects to be transformed, in weight-paint. */
     tc->poseobj = ob;
 
+    pose_sequence_transform_begin(t, tc);
+
     /* Initialize trans data. */
     td = tc->data = MEM_new_array_zeroed<TransData>(tc->data_len, "TransPoseBone");
     tdx = tc->data_ext = MEM_new_array_zeroed<TransDataExtension>(tc->data_len,
@@ -739,7 +743,8 @@ static void createTransPose(bContext * /*C*/, TransInfo *t)
     }
 
     /* Do we need to add temporal IK chains? */
-    if ((pose->flag & POSE_AUTO_IK) && t->mode == TFM_TRANSLATION) {
+    if ((pose->flag & POSE_AUTO_IK) && t->mode == TFM_TRANSLATION && ob->pose_sequence == nullptr)
+    {
       if (pose_grab_with_ik(bmain, ob)) {
         t->flag |= T_AUTOIK;
         has_translate_rotate[0] = true;
@@ -754,7 +759,8 @@ static void createTransPose(bContext * /*C*/, TransInfo *t)
     tdx->center_no_override[2] = 0;
     for (bPoseChannel &pchan : ob->pose->chanbase) {
       if (pchan.runtime.flag & POSE_RUNTIME_TRANSFORM) {
-        add_pose_transdata(t, &pchan, ob, td++, tdx++);
+        add_pose_transdata(t, &pchan, ob, td, tdx++);
+        pose_sequence_transform_control_init(t, tc, *td++, pchan);
       }
     }
     tc->custom.type.free_cb = free_pose_transdata;
@@ -1494,6 +1500,8 @@ static void recalcData_pose(TransInfo *t)
         autokeyframe_pose(t->context, t->scene, ob, targetless_ik, t->mode, t->data_len_all > 1);
       }
 
+      pose_sequence_transform_recalc(t, tc);
+
       DEG_id_tag_update(&ob->id, ID_RECALC_GEOMETRY);
     }
   }
@@ -1741,12 +1749,17 @@ static void special_aftertrans_update__pose(bContext *C, TransInfo *t)
       /* Automatic inserting of keys and unkeyed tagging -
        * only if transform wasn't canceled (or #TFM_DUMMY). */
       if (!canceled && (t->mode != TFM_DUMMY)) {
-        autokeyframe_pose(C, t->scene, ob, targetless_ik, t->mode, t->data_len_all > 1);
+        /* A Pose Sequence stores the edit itself; keys would only go unseen into the Action. */
+        if (ob->pose_sequence == nullptr) {
+          autokeyframe_pose(C, t->scene, ob, targetless_ik, t->mode, t->data_len_all > 1);
+        }
         DEG_id_tag_update(&ob->id, ID_RECALC_GEOMETRY);
       }
       else {
         DEG_id_tag_update(&ob->id, ID_RECALC_GEOMETRY);
       }
+
+      pose_sequence_transform_end(t, tc);
 
       if (t->mode != TFM_DUMMY && motionpath_need_update_pose(t->scene, ob)) {
         motionpath_updates.add(ob);

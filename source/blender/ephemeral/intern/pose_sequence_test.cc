@@ -98,6 +98,45 @@ TEST_F(PoseSequenceTest, store_bone_starts_from_held_pose)
   EXPECT_FALSE(pose_sequence_store_bone(seq, 9, "tip", scaled));  /* Before the start. */
 }
 
+TEST_F(PoseSequenceTest, store_pose_round_trips_through_apply)
+{
+  bPoseChannel root_chan;
+  bPoseChannel tip_chan;
+  STRNCPY(root_chan.name, "root");
+  STRNCPY(tip_chan.name, "tip");
+  root_chan.rotmode = ROT_MODE_AXISANGLE;
+  root_chan.rotAxis[2] = 1.0f;
+  root_chan.rotAngle = float(M_PI_2);
+  root_chan.loc[0] = 4.0f;
+  tip_chan.rotmode = ROT_MODE_XYZ;
+  tip_chan.eul[0] = 0.5f;
+  tip_chan.scale[1] = 2.0f;
+  bPose pose;
+  pose.chanbase.first = &root_chan;
+  root_chan.next = &tip_chan;
+  tip_chan.prev = &root_chan;
+  pose.chanbase.last = &tip_chan;
+
+  ASSERT_TRUE(pose_sequence_store_pose(seq, 12, pose));
+  EXPECT_FALSE(pose_sequence_store_pose(seq, 20, pose)); /* Past the end. */
+  EXPECT_EQ(seq.frame_states[2], POSE_SEQUENCE_FRAME_AUTHORED);
+  EXPECT_NEAR(transform(2, 0).rotation[0], std::cos(float(M_PI_4)), 1e-6f);
+  EXPECT_NEAR(transform(2, 0).rotation[3], std::sin(float(M_PI_4)), 1e-6f);
+
+  /* Clear the channels, then read the stored pose back into them. */
+  root_chan.loc[0] = 0.0f;
+  root_chan.rotAngle = 0.0f;
+  tip_chan.eul[0] = 0.0f;
+  tip_chan.scale[1] = 1.0f;
+  pose_sequence_apply(seq, 12, pose);
+
+  EXPECT_EQ(root_chan.loc[0], 4.0f);
+  EXPECT_NEAR(root_chan.rotAngle, float(M_PI_2), 1e-6f);
+  EXPECT_NEAR(root_chan.rotAxis[2], 1.0f, 1e-6f);
+  EXPECT_NEAR(tip_chan.eul[0], 0.5f, 1e-6f);
+  EXPECT_EQ(tip_chan.scale[1], 2.0f);
+}
+
 TEST_F(PoseSequenceTest, apply_converts_to_channel_rotation_mode)
 {
   /* Frame 11: root moved, tip turned 90 degrees around Z. */

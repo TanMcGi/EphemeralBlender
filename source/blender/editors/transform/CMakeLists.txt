@@ -38,6 +38,7 @@ set(SRC
   transform_convert_paintcurve.cc
   transform_convert_particle.cc
   transform_convert_pointcloud.cc
+  transform_convert_pose_sequence.cc
   transform_convert_sculpt.cc
   transform_convert_sequencer.cc
   transform_convert_sequencer_image.cc
@@ -100,6 +101,7 @@ set(SRC
   transform.hh
   transform_constraints.hh
   transform_convert.hh
+  transform_convert_pose_sequence.hh
   transform_draw_cursors.hh
   transform_gizmo.hh
   transform_mode.hh
@@ -117,6 +119,7 @@ set(LIB
   PRIVATE bf::bmesh
   PRIVATE bf::depsgraph
   PRIVATE bf::dna
+  PRIVATE bf::ephemeral
   bf_editor_mask
   PRIVATE bf::gpu
   PRIVATE bf::imbuf

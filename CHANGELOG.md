@@ -9,6 +9,23 @@ Release tags are named `ephemeral-vX.Y.Z`.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-08
+
+### Added
+
+- Ephemeral posing in Pose Mode on armatures with a Pose Sequence, through
+  Blender's own move and rotate tools (snapping and numeric input included):
+  - Rotate is FK: the bone turns and its children follow.
+  - Move on a bone with a parent aims the parent at the new position, keeping
+    bone lengths. Move on a root bone translates it.
+  - Edits are written live into the Pose Sequence at the current frame and mark
+    it authored. Cancel restores the frame. Each edit is one undo step.
+- Aim solver in the ephemeral module.
+
+### Changed
+
+- Auto-keying and Auto IK are skipped for armatures with a Pose Sequence.
+
 ## [0.2.0] - 2026-11-08
 
 ### Added
@@ -38,6 +55,7 @@ Based on Blender 5.2 LTS.
 - Ephemeral module (`source/blender/ephemeral/`) with per-bone transform
   interpolation and its first unit test.
 
-[Unreleased]: https://github.com/TanMcGi/EphemeralBlender/compare/ephemeral-v0.2.0...HEAD
+[Unreleased]: https://github.com/TanMcGi/EphemeralBlender/compare/ephemeral-v0.3.0...HEAD
+[0.3.0]: https://github.com/TanMcGi/EphemeralBlender/compare/ephemeral-v0.2.0...ephemeral-v0.3.0
 [0.2.0]: https://github.com/TanMcGi/EphemeralBlender/compare/ephemeral-v0.1.0...ephemeral-v0.2.0
 [0.1.0]: https://github.com/TanMcGi/EphemeralBlender/releases/tag/ephemeral-v0.1.0

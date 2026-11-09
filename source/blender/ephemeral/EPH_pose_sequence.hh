@@ -46,6 +46,13 @@ bool pose_sequence_store_bone(PoseSequence &seq,
                               const PoseSequenceTransform &transform);
 
 /**
+ * Store the transforms of every channel in `pose` that the sequence covers at scene `frame`,
+ * converting rotations to quaternions, and mark the frame authored.
+ * Returns false when the frame is outside the sequence.
+ */
+bool pose_sequence_store_pose(PoseSequence &seq, int frame, const bPose &pose);
+
+/**
  * Write the pose shown at scene `frame` into the matching channels of `pose`, converting each
  * rotation to the channel's own rotation mode. Channels the sequence doesn't cover are left
  * unchanged, as is everything when no pose is stored at or before `frame`.

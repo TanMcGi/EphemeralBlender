@@ -97,6 +97,44 @@ bool pose_sequence_store_bone(PoseSequence &seq,
   return true;
 }
 
+static void channel_rotation_to_quat(const bPoseChannel &pchan, float r_quat[4])
+{
+  switch (pchan.rotmode) {
+    case ROT_MODE_QUAT:
+      normalize_qt_qt(r_quat, pchan.quat);
+      break;
+    case ROT_MODE_AXISANGLE:
+      axis_angle_to_quat(r_quat, pchan.rotAxis, pchan.rotAngle);
+      break;
+    default:
+      eulO_to_quat(r_quat, pchan.eul, pchan.rotmode);
+      break;
+  }
+}
+
+bool pose_sequence_store_pose(PoseSequence &seq, const int frame, const bPose &pose)
+{
+  const int index = frame - seq.frame_start;
+  if (index < 0 || index >= seq.frame_count) {
+    return false;
+  }
+  PoseSequenceTransform *frame_transforms = &seq.transforms[int64_t(index) * seq.bone_count];
+  for (const bPoseChannel &pchan : pose.chanbase) {
+    for (int bone = 0; bone < seq.bone_count; bone++) {
+      if (!STREQ(seq.bones[bone].name, pchan.name)) {
+        continue;
+      }
+      PoseSequenceTransform &transform = frame_transforms[bone];
+      copy_v3_v3(transform.location, pchan.loc);
+      channel_rotation_to_quat(pchan, transform.rotation);
+      copy_v3_v3(transform.scale, pchan.scale);
+      break;
+    }
+  }
+  seq.frame_states[index] = POSE_SEQUENCE_FRAME_AUTHORED;
+  return true;
+}
+
 static void apply_rotation(const float quat[4], bPoseChannel &pchan)
 {
   switch (pchan.rotmode) {

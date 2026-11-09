@@ -15,9 +15,11 @@ set(INC_SYS
 set(SRC
   intern/pose.cc
   intern/pose_sequence.cc
+  intern/solver.cc
 
   EPH_pose.hh
   EPH_pose_sequence.hh
+  EPH_solver.hh
 )
 
 set(LIB
@@ -35,6 +37,7 @@ if(WITH_GTESTS)
   set(TEST_SRC
     intern/pose_sequence_test.cc
     intern/pose_test.cc
+    intern/solver_test.cc
   )
   set(TEST_LIB
     PRIVATE bf::ephemeral
